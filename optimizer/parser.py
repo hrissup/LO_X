@@ -17,8 +17,10 @@ from pycparser import c_ast, c_generator
 _gen = c_generator.CGenerator()
 if os.name == "nt":
     _CPP_CANDIDATES = ("gcc", "clang")
+    _CPP_CANDIDATE_LABEL = "gcc or clang"
 else:
     _CPP_CANDIDATES = ("gcc", "clang", "cpp")
+    _CPP_CANDIDATE_LABEL = "gcc, clang, or cpp"
 _CPP_ARGS_BASE = [
     "-E",
     "-std=c99",
@@ -36,10 +38,12 @@ def _resolve_cpp() -> Tuple[str, List[str]]:
     if env is not None:
         env = env.strip()
         if not env:
-            raise RuntimeError("CPP is set but empty.")
+            raise RuntimeError("C preprocessor environment variable is set but empty.")
         parts = shlex.split(env)
         if not parts or not parts[0]:
-            raise RuntimeError("CPP environment variable contains no valid command.")
+            raise RuntimeError(
+                "C preprocessor environment variable contains no valid command."
+            )
         if not shutil.which(parts[0]):
             raise RuntimeError(f"C preprocessor not found: {parts[0]}")
         return parts[0], parts[1:]
@@ -47,7 +51,8 @@ def _resolve_cpp() -> Tuple[str, List[str]]:
         if shutil.which(candidate):
             return candidate, []
     raise RuntimeError(
-        "C preprocessor not found. Install gcc/clang/cpp (or set LOX_CPP/CPP)."
+        "C preprocessor not found. Install "
+        f"{_CPP_CANDIDATE_LABEL} (or set LOX_CPP/CPP)."
     )
 
 

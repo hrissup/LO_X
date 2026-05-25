@@ -11,8 +11,10 @@ from typing import List, Optional
 CPP_SOURCE = os.path.join(os.path.dirname(__file__), "locusopt.cpp")
 if os.name == "nt":
     _CXX_CANDIDATES = ("g++", "clang++")
+    _CXX_CANDIDATE_LABEL = "g++ or clang++"
 else:
     _CXX_CANDIDATES = ("g++", "clang++", "c++")
+    _CXX_CANDIDATE_LABEL = "g++, clang++, or c++"
 
 
 def _resolve_cxx() -> List[str]:
@@ -22,10 +24,10 @@ def _resolve_cxx() -> List[str]:
     if env is not None:
         env = env.strip()
         if not env:
-            raise RuntimeError("CXX is set but empty.")
+            raise RuntimeError("C++ compiler environment variable is set but empty.")
         parts = shlex.split(env)
         if not parts or not parts[0]:
-            raise RuntimeError("CXX environment variable contains no valid command.")
+            raise RuntimeError("C++ compiler environment variable contains no valid command.")
         if not shutil.which(parts[0]):
             raise RuntimeError(f"C++ compiler not found: {parts[0]}")
         return parts
@@ -33,7 +35,8 @@ def _resolve_cxx() -> List[str]:
         if shutil.which(candidate):
             return [candidate]
     raise RuntimeError(
-        "C++ compiler not found. Install g++, clang++, or c++ (or set LOX_CXX/CXX)."
+        "C++ compiler not found. Install "
+        f"{_CXX_CANDIDATE_LABEL} (or set LOX_CXX/CXX)."
     )
 
 
