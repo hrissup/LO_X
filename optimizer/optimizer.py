@@ -14,9 +14,12 @@ _CXX_CANDIDATES = ("g++", "clang++", "c++")
 
 def _resolve_cxx() -> List[str]:
     env = os.environ.get("LOX_CXX") or os.environ.get("CXX")
-    if env:
+    if env is not None:
+        env = env.strip()
+        if not env:
+            raise RuntimeError("CXX is set but empty.")
         parts = shlex.split(env)
-        if not parts:
+        if not parts or not parts[0]:
             raise RuntimeError("CXX is set but empty.")
         if not shutil.which(parts[0]):
             raise RuntimeError(f"C++ compiler not found: {parts[0]}")

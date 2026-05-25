@@ -28,9 +28,12 @@ _CPP_ARGS_BASE = [
 
 def _resolve_cpp() -> Tuple[str, List[str]]:
     env = os.environ.get("LOX_CPP") or os.environ.get("CPP")
-    if env:
+    if env is not None:
+        env = env.strip()
+        if not env:
+            raise RuntimeError("CPP is set but empty.")
         parts = shlex.split(env)
-        if not parts:
+        if not parts or not parts[0]:
             raise RuntimeError("CPP is set but empty.")
         if not shutil.which(parts[0]):
             raise RuntimeError(f"C preprocessor not found: {parts[0]}")
