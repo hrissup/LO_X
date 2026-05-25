@@ -81,17 +81,11 @@ static string ltrim(string s) {
 }
 
 static string rtrim(string s) {
-    if (s.empty()) {
-        return s;
-    }
-    size_t i = s.size() - 1;
-    while (i < s.size() && std::isspace(static_cast<unsigned char>(s[i]))) {
-        if (i == 0) {
-            return "";
-        }
+    size_t i = s.size();
+    while (i > 0 && std::isspace(static_cast<unsigned char>(s[i - 1]))) {
         i--;
     }
-    return s.substr(0, i + 1);
+    return s.substr(0, i);
 }
 
 static string trim(string s) {
@@ -857,7 +851,7 @@ static void print_analysis(const string &code, const string &filename,
         }
     }
 
-    std::cout << "\nLocusOpt CPP — Analysis Report\n";
+    std::cout << "\nLocusOpt C++ — Analysis Report\n";
     std::cout << "========================================\n";
     std::cout << "File: " << filename << "\n\n";
 

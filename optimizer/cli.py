@@ -27,7 +27,7 @@ def cmd_analyze(args: argparse.Namespace) -> int:
     try:
         from .analyzer import analyse_file
         from .dependence import check_dependence
-    except ModuleNotFoundError:
+    except ImportError:
         try:
             output = analyze_file_cpp(args.source, func=getattr(args, "func", None))
             print(output, end="")
@@ -105,6 +105,7 @@ def build_parser() -> argparse.ArgumentParser:
             "  python main.py analyze kernels/matrix_transpose.c\n"
             "  python main.py analyze kernels/matrix_transpose.c --func kernel_transpose\n"
             "  python main.py optimize kernels/matrix_transpose.c --output /tmp/opt.c\n"
+            "  # Sample kernel lives in kernels/matrix_transpose.c\n"
         ),
     )
     parser.add_argument(
