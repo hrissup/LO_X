@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shlex
 import shutil
 import subprocess
 import tempfile
@@ -8,21 +9,39 @@ from typing import Optional
 
 
 CPP_SOURCE = os.path.join(os.path.dirname(__file__), "locusopt.cpp")
+_CXX_CANDIDATES = ("g++", "clang++", "c++")
+
+
+def _resolve_cxx() -> list[str]:
+    env = os.environ.get("LOX_CXX") or os.environ.get("CXX")
+    if env:
+        parts = shlex.split(env)
+        if not parts:
+            raise RuntimeError("CXX is set but empty.")
+        if not shutil.which(parts[0]):
+            raise RuntimeError(f"C++ compiler not found: {parts[0]}")
+        return parts
+    for candidate in _CXX_CANDIDATES:
+        if shutil.which(candidate):
+            return [candidate]
+    raise RuntimeError(
+        "C++ compiler not found. Install g++, clang++, or c++ (or set LOX_CXX/CXX)."
+    )
 
 
 def _compile_cpp(binary_path: str) -> None:
-    if not shutil.which("g++"):
-        raise RuntimeError("g++ is required to build the C++ optimizer.")
-    cmd = ["g++", "-std=c++17", "-O2", CPP_SOURCE, "-o", binary_path]
+    cxx = _resolve_cxx()
+    cmd = cxx + ["-std=c++17", "-O2", CPP_SOURCE, "-o", binary_path]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.strip() or "Failed to compile C++ optimizer.")
 
 
 def _get_binary() -> str:
+    suffix = ".exe" if os.name == "nt" else ""
     binary_path = os.path.join(
         tempfile.gettempdir(),
-        f"locusopt_cpp_{os.getpid()}",
+        f"locusopt_cpp_{os.getpid()}{suffix}",
     )
     if (not os.path.isfile(binary_path) or
             os.path.getmtime(binary_path) < os.path.getmtime(CPP_SOURCE)):

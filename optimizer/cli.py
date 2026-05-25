@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+import tempfile
 
 from . import __version__
 from .optimizer import analyze_file_cpp, optimize_file
@@ -98,6 +99,7 @@ def cmd_optimize(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    sample_output = os.path.join(tempfile.gettempdir(), "opt.c")
     parser = argparse.ArgumentParser(
         prog="locusopt-p2",
         description="LocusOpt P2 — cache-locality analyser for C numerical kernels (Phase 2)",
@@ -106,7 +108,7 @@ def build_parser() -> argparse.ArgumentParser:
             "Examples:\n"
             "  python main.py analyze kernels/matrix_transpose.c\n"
             "  python main.py analyze kernels/matrix_transpose.c --func kernel_transpose\n"
-            "  python main.py optimize kernels/matrix_transpose.c --output /tmp/opt.c\n"
+            f"  python main.py optimize kernels/matrix_transpose.c --output {sample_output}\n"
             "  # Sample kernel lives in kernels/matrix_transpose.c\n"
         ),
     )
