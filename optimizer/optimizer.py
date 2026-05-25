@@ -16,7 +16,9 @@ else:
 
 
 def _resolve_cxx() -> List[str]:
-    env = os.environ.get("LOX_CXX") or os.environ.get("CXX")
+    env = os.environ.get("LOX_CXX")
+    if env is None:
+        env = os.environ.get("CXX")
     if env is not None:
         env = env.strip()
         if not env:

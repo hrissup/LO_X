@@ -30,7 +30,9 @@ _CPP_ARGS_BASE = [
 
 
 def _resolve_cpp() -> Tuple[str, List[str]]:
-    env = os.environ.get("LOX_CPP") or os.environ.get("CPP")
+    env = os.environ.get("LOX_CPP")
+    if env is None:
+        env = os.environ.get("CPP")
     if env is not None:
         env = env.strip()
         if not env:
