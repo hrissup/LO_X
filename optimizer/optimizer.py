@@ -19,15 +19,17 @@ else:
 
 def _resolve_cxx() -> List[str]:
     env = os.environ.get("LOX_CXX")
+    env_var = "LOX_CXX"
     if env is None:
         env = os.environ.get("CXX")
+        env_var = "CXX"
     if env is not None:
         env = env.strip()
         if not env:
-            raise RuntimeError("C++ compiler environment variable is set but empty.")
+            raise RuntimeError(f"{env_var} is set but empty.")
         parts = shlex.split(env)
         if not parts or not parts[0]:
-            raise RuntimeError("C++ compiler environment variable contains no valid command.")
+            raise RuntimeError(f"{env_var} contains no valid command.")
         if not shutil.which(parts[0]):
             raise RuntimeError(f"C++ compiler not found: {parts[0]}")
         return parts

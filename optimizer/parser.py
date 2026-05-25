@@ -33,17 +33,17 @@ _CPP_ARGS_BASE = [
 
 def _resolve_cpp() -> Tuple[str, List[str]]:
     env = os.environ.get("LOX_CPP")
+    env_var = "LOX_CPP"
     if env is None:
         env = os.environ.get("CPP")
+        env_var = "CPP"
     if env is not None:
         env = env.strip()
         if not env:
-            raise RuntimeError("C preprocessor environment variable is set but empty.")
+            raise RuntimeError(f"{env_var} is set but empty.")
         parts = shlex.split(env)
         if not parts or not parts[0]:
-            raise RuntimeError(
-                "C preprocessor environment variable contains no valid command."
-            )
+            raise RuntimeError(f"{env_var} contains no valid command.")
         if not shutil.which(parts[0]):
             raise RuntimeError(f"C preprocessor not found: {parts[0]}")
         return parts[0], parts[1:]
