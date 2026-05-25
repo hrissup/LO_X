@@ -118,6 +118,8 @@ static string strip_comments(const string &input) {
             if (c == '\n') {
                 in_line = false;
                 out += c;
+            } else {
+                out += ' ';
             }
             continue;
         }
@@ -125,7 +127,15 @@ static string strip_comments(const string &input) {
         if (in_block) {
             if (c == '*' && n == '/') {
                 in_block = false;
+                out += ' ';
+                out += ' ';
                 i++;
+                continue;
+            }
+            if (c == '\n') {
+                out += '\n';
+            } else {
+                out += ' ';
             }
             continue;
         }
@@ -162,12 +172,16 @@ static string strip_comments(const string &input) {
 
         if (c == '/' && n == '/') {
             in_line = true;
+            out += ' ';
+            out += ' ';
             i++;
             continue;
         }
 
         if (c == '/' && n == '*') {
             in_block = true;
+            out += ' ';
+            out += ' ';
             i++;
             continue;
         }
@@ -720,7 +734,7 @@ struct Replacement {
 };
 
 static string ensure_min_macro(const string &code) {
-    if (code.find("LOCUSOPT_MIN") != string::npos) {
+    if (code.find("#define LOCUSOPT_MIN") != string::npos) {
         return code;
     }
     string macro =
