@@ -15,7 +15,10 @@ import pycparser
 from pycparser import c_ast, c_generator
 
 _gen = c_generator.CGenerator()
-_CPP_CANDIDATES = ("gcc", "clang", "cpp")
+if os.name == "nt":
+    _CPP_CANDIDATES = ("gcc", "clang")
+else:
+    _CPP_CANDIDATES = ("gcc", "clang", "cpp")
 _CPP_ARGS_BASE = [
     "-E",
     "-std=c99",

@@ -9,7 +9,10 @@ from typing import List, Optional
 
 
 CPP_SOURCE = os.path.join(os.path.dirname(__file__), "locusopt.cpp")
-_CXX_CANDIDATES = ("g++", "clang++", "c++")
+if os.name == "nt":
+    _CXX_CANDIDATES = ("g++", "clang++")
+else:
+    _CXX_CANDIDATES = ("g++", "clang++", "c++")
 
 
 def _resolve_cxx() -> List[str]:
