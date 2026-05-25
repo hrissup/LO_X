@@ -29,6 +29,8 @@ def cmd_analyze(args: argparse.Namespace) -> int:
         from .dependence import check_dependence
     except ImportError:
         try:
+            print(_yellow("pycparser unavailable; using C++ analyzer output."),
+                  file=sys.stderr)
             output = analyze_file_cpp(args.source, func=getattr(args, "func", None))
             print(output, end="")
             return 0

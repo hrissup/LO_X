@@ -554,6 +554,7 @@ static NestAnalysis analyse_nest(const LoopNest &nest) {
 }
 
 static bool is_affine(const string &expr) {
+    // Nested subscripts (e.g., B[i]) are treated as non-affine for simplicity.
     std::regex non_affine(R"([/%\[\]]|[A-Za-z_]\w*\s*\()");
     return !std::regex_search(expr, non_affine);
 }
@@ -608,7 +609,7 @@ static DependenceResult check_dependence(const LoopNest &nest) {
         return result;
     }
 
-    result.safe_interchange = nest.loops.size() == 2;
+    result.safe_interchange = nest.loops.size() >= 2;
     result.safe_tiling = true;
     result.reason = "No loop-carried dependencies detected.";
     return result;
