@@ -6,8 +6,6 @@ import os
 import sys
 
 from . import __version__
-from .analyzer import analyse_file
-from .dependence import check_dependence
 from .optimizer import optimize_file
 
 
@@ -26,6 +24,8 @@ def _bold(t):   return _colour(t, "1")
 
 def cmd_analyze(args: argparse.Namespace) -> int:
     """Analyse *args.source* and print a report."""
+    from .analyzer import analyse_file
+    from .dependence import check_dependence
     src = args.source
     if not os.path.isfile(src):
         print(_red(f"Error: file not found: {src}"), file=sys.stderr)
