@@ -797,6 +797,12 @@ static string optimize_code(const string &code, int tile_size, bool do_interchan
             std::swap(loops[0], loops[1]);
         }
 
+        size_t line_start = clean.rfind('\n', nest.start);
+        if (line_start == string::npos) {
+            line_start = 0;
+        } else {
+            line_start += 1;
+        }
         string indent = get_indent(clean, nest.start);
         string replacement;
         if (apply_tiling) {
@@ -810,7 +816,7 @@ static string optimize_code(const string &code, int tile_size, bool do_interchan
             replacement = build_simple_nest(loops, nest.body, indent);
         }
 
-        replacements.push_back({nest.start, nest.end, replacement});
+        replacements.push_back({line_start, nest.end, replacement});
         pos = nest.end;
     }
 
