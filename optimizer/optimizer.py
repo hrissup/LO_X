@@ -21,7 +21,8 @@ def _compile_cpp(binary_path: str) -> None:
 
 def _get_binary() -> str:
     binary_path = os.path.join(tempfile.gettempdir(), "locusopt_cpp")
-    if not os.path.isfile(binary_path):
+    if (not os.path.isfile(binary_path) or
+            os.path.getmtime(binary_path) < os.path.getmtime(CPP_SOURCE)):
         _compile_cpp(binary_path)
     return binary_path
 
