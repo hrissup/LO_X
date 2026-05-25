@@ -58,3 +58,14 @@ def optimize_file(
         return None
 
     return proc.stdout
+
+
+def analyze_file_cpp(source: str, func: Optional[str] = None) -> str:
+    binary = _get_binary()
+    cmd = [binary, "analyze", source]
+    if func:
+        cmd.extend(["--func", func])
+    proc = subprocess.run(cmd, text=True, capture_output=True)
+    if proc.returncode != 0:
+        raise RuntimeError(proc.stderr.strip() or "C++ analyzer failed.")
+    return proc.stdout

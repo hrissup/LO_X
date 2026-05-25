@@ -6,7 +6,7 @@ import os
 import sys
 
 from . import __version__
-from .optimizer import optimize_file
+from .optimizer import analyze_file_cpp, optimize_file
 
 
 def _colour(text: str, code: str) -> str:
@@ -24,8 +24,17 @@ def _bold(t):   return _colour(t, "1")
 
 def cmd_analyze(args: argparse.Namespace) -> int:
     """Analyse *args.source* and print a report."""
-    from .analyzer import analyse_file
-    from .dependence import check_dependence
+    try:
+        from .analyzer import analyse_file
+        from .dependence import check_dependence
+    except ModuleNotFoundError:
+        try:
+            output = analyze_file_cpp(args.source, func=getattr(args, "func", None))
+            print(output, end="")
+            return 0
+        except RuntimeError as exc:
+            print(_red(f"Analyzer error: {exc}"), file=sys.stderr)
+            return 1
     src = args.source
     if not os.path.isfile(src):
         print(_red(f"Error: file not found: {src}"), file=sys.stderr)
