@@ -20,7 +20,7 @@ def _resolve_cxx() -> List[str]:
             raise RuntimeError("CXX is set but empty.")
         parts = shlex.split(env)
         if not parts or not parts[0]:
-            raise RuntimeError("CXX is set but empty.")
+            raise RuntimeError("CXX environment variable contains no valid command.")
         if not shutil.which(parts[0]):
             raise RuntimeError(f"C++ compiler not found: {parts[0]}")
         return parts

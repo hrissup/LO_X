@@ -34,7 +34,7 @@ def _resolve_cpp() -> Tuple[str, List[str]]:
             raise RuntimeError("CPP is set but empty.")
         parts = shlex.split(env)
         if not parts or not parts[0]:
-            raise RuntimeError("CPP is set but empty.")
+            raise RuntimeError("CPP environment variable contains no valid command.")
         if not shutil.which(parts[0]):
             raise RuntimeError(f"C preprocessor not found: {parts[0]}")
         return parts[0], parts[1:]

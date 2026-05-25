@@ -99,7 +99,7 @@ def cmd_optimize(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    sample_output = os.path.join(tempfile.gettempdir(), "opt.c")
+    example_output_path = os.path.join(tempfile.gettempdir(), "opt.c")
     parser = argparse.ArgumentParser(
         prog="locusopt-p2",
         description="LocusOpt P2 — cache-locality analyser for C numerical kernels (Phase 2)",
@@ -108,7 +108,7 @@ def build_parser() -> argparse.ArgumentParser:
             "Examples:\n"
             "  python main.py analyze kernels/matrix_transpose.c\n"
             "  python main.py analyze kernels/matrix_transpose.c --func kernel_transpose\n"
-            f"  python main.py optimize kernels/matrix_transpose.c --output {sample_output}\n"
+            f"  python main.py optimize kernels/matrix_transpose.c --output {example_output_path}\n"
             "  # Sample kernel lives in kernels/matrix_transpose.c\n"
         ),
     )
