@@ -5,14 +5,14 @@ import shlex
 import shutil
 import subprocess
 import tempfile
-from typing import Optional
+from typing import List, Optional
 
 
 CPP_SOURCE = os.path.join(os.path.dirname(__file__), "locusopt.cpp")
 _CXX_CANDIDATES = ("g++", "clang++", "c++")
 
 
-def _resolve_cxx() -> list[str]:
+def _resolve_cxx() -> List[str]:
     env = os.environ.get("LOX_CXX") or os.environ.get("CXX")
     if env:
         parts = shlex.split(env)

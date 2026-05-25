@@ -26,7 +26,7 @@ _CPP_ARGS_BASE = [
 ]
 
 
-def _resolve_cpp() -> tuple[str, List[str]]:
+def _resolve_cpp() -> Tuple[str, List[str]]:
     env = os.environ.get("LOX_CPP") or os.environ.get("CPP")
     if env:
         parts = shlex.split(env)
@@ -43,7 +43,7 @@ def _resolve_cpp() -> tuple[str, List[str]]:
     )
 
 
-def _cpp_settings() -> tuple[str, List[str]]:
+def _cpp_settings() -> Tuple[str, List[str]]:
     cpp_path, extra_args = _resolve_cpp()
     return cpp_path, _CPP_ARGS_BASE + extra_args
 
