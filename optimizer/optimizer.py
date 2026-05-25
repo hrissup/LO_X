@@ -46,11 +46,7 @@ def optimize_file(
     if disable_tiling:
         cmd.append("--no-tiling")
 
-    if output:
-        proc = subprocess.run(cmd, text=True, capture_output=True)
-    else:
-        proc = subprocess.run(cmd, text=True, capture_output=True)
-
+    proc = subprocess.run(cmd, text=True, capture_output=True)
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.strip() or "C++ optimizer failed.")
 

@@ -102,8 +102,8 @@ def build_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "Examples:\n"
-            "  python main.py analyze kernels/matrix_transpose_naive.c\n"
-            "  python main.py analyze kernels/matrix_transpose_naive.c --func kernel_transpose\n"
+            "  python main.py analyze kernels/matrix_transpose.c\n"
+            "  python main.py analyze kernels/matrix_transpose.c --func kernel_transpose\n"
             "  python main.py optimize kernels/matrix_transpose.c --output /tmp/opt.c\n"
         ),
     )
