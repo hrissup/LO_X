@@ -5,6 +5,8 @@ from __future__ import annotations
 import copy
 import os
 import re
+import shlex
+import shutil
 import tempfile
 from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
@@ -13,6 +15,50 @@ import pycparser
 from pycparser import c_ast, c_generator
 
 _gen = c_generator.CGenerator()
+if os.name == "nt":
+    _CPP_CANDIDATES = ("gcc", "clang")
+    _CPP_CANDIDATE_LABEL = "gcc or clang"
+else:
+    _CPP_CANDIDATES = ("gcc", "clang", "cpp")
+    _CPP_CANDIDATE_LABEL = "gcc, clang, or cpp"
+_CPP_ARGS_BASE = [
+    "-E",
+    "-std=c99",
+    "-D__attribute__(x)=",
+    "-D__extension__=",
+    "-D__restrict=",
+    "-D__inline=",
+]
+
+
+def _resolve_cpp() -> Tuple[str, List[str]]:
+    env = os.environ.get("LOX_CPP")
+    env_var = "LOX_CPP"
+    if env is None:
+        env = os.environ.get("CPP")
+        env_var = "CPP"
+    if env is not None:
+        env = env.strip()
+        if not env:
+            raise RuntimeError(f"{env_var} is set but empty.")
+        parts = shlex.split(env)
+        if not parts or not parts[0]:
+            raise RuntimeError(f"{env_var} contains no valid command.")
+        if not shutil.which(parts[0]):
+            raise RuntimeError(f"C preprocessor not found: {parts[0]}")
+        return parts[0], parts[1:]
+    for candidate in _CPP_CANDIDATES:
+        if shutil.which(candidate):
+            return candidate, []
+    raise RuntimeError(
+        "C preprocessor not found. Install "
+        f"{_CPP_CANDIDATE_LABEL} (or set LOX_CPP/CPP)."
+    )
+
+
+def _cpp_settings() -> Tuple[str, List[str]]:
+    cpp_path, extra_args = _resolve_cpp()
+    return cpp_path, _CPP_ARGS_BASE + extra_args
 
 
 @dataclass
@@ -210,15 +256,12 @@ def parse_kernel(filepath: str) -> List[KernelInfo]:
         raise FileNotFoundError(f"Source file not found: {filepath}")
 
     try:
+        cpp_path, cpp_args = _cpp_settings()
         ast = pycparser.parse_file(
             filepath,
             use_cpp=True,
-            cpp_path="gcc",
-            cpp_args=["-E", "-std=c99",
-                      "-D__attribute__(x)=",
-                      "-D__extension__=",
-                      "-D__restrict=",
-                      "-D__inline="],
+            cpp_path=cpp_path,
+            cpp_args=cpp_args,
         )
     except pycparser.plyparser.ParseError as exc:
         raise SyntaxError(
@@ -252,13 +295,10 @@ def parse_kernel_function(filepath: str, func_name: str) -> Optional[KernelInfo]
 
 def get_ast(filepath: str):
     filepath = os.path.abspath(filepath)
+    cpp_path, cpp_args = _cpp_settings()
     return pycparser.parse_file(
         filepath,
         use_cpp=True,
-        cpp_path="gcc",
-        cpp_args=["-E", "-std=c99",
-                  "-D__attribute__(x)=",
-                  "-D__extension__=",
-                  "-D__restrict=",
-                  "-D__inline="],
+        cpp_path=cpp_path,
+        cpp_args=cpp_args,
     )
